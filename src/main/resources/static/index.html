@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <link
+    rel="stylesheet"
+    href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous"
+  />
+  <script
+    src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"
+  ></script>
+  <head>
+    <title>Convertions log</title>
+    <script>
+      function initialize() {
+        const eventSource = new EventSource(
+          "http://localhost:3000/api/emitter/convertions"
+        );
+
+        eventSource.onmessage = (e) => {
+          const msg = JSON.parse(e.data);
+          // console.log(e.data);
+          //   document.getElementById("convertions").innerHTML = e.data;
+          //   document.getElementById("heap").innerHTML = msg.heap;
+          //   document.getElementById("nonheap").innerHTML = msg.nonHeap;
+          addConvertion(msg);
+        };
+
+        eventSource.onopen = (e) => console.log("open");
+
+        eventSource.onerror = (e) => {
+          if (e.readyState == EventSource.CLOSED) {
+            console.log("close");
+          } else {
+            console.log(e);
+          }
+        };
+
+        function addConvertion(data) {
+          var listContainer = $("#convertions");
+          listContainer.prepend(
+            '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start"> ' +
+              "Valor " +
+              data.value +
+              " da moeda " +
+              data.from +
+              " em " +
+              data.to +
+              " na data " +
+              data.date +
+              " convertido  fica " +
+              data.convertedValue +
+              "</a>"
+          );
+        }
+      }
+
+      window.onload = initialize;
+    </script>
+  </head>
+  <body>
+    <h1>Convertions list</h1>
+
+    <div id="convertions" class="list-group"></div>
+  </body>
+</html>
